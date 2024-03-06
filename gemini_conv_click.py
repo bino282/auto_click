@@ -20,7 +20,6 @@ def find_button_location(button_img_path):
     # find copy btn location
         
     screen_img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
-    cv2.imwrite("screen.jpg",screen_img)
     button_img = cv2.imread(button_img_path, cv2.IMREAD_GRAYSCALE)
     w_img, h_img = screen_img.shape[1], screen_img.shape[0]
     w, h = button_img.shape[1], button_img.shape[0]
@@ -106,26 +105,48 @@ def string_to_id(input_string):
 if __name__ == "__main__":
     import ndjson, json, os
     from datetime import datetime
-    import random
     time.sleep(5)
-    with open("data/Evol-Instruction-66k.json","r",encoding="utf-8") as fr:
+    import random
+    result_list = os.listdir("data/conv_copilot")
+    result_list = [e.split(".")[0] for e in result_list]
+    with open("data/code-gpt4.json","r",encoding="utf-8") as fr:
         data = json.load(fr)
     random.shuffle(data)
     for e in data:
-        prompt = e["instruction"]
-        text_id = str(string_to_id(prompt))
-        # if f"{text_id}.json" in results_list:
-        #     continue
-        if checkid(text_id):
+        items = e["items"]
+        human_prompt_list = []
+        gpt_answer_list = []
+        for i in range(len(items)):
+            if items[i]["from"]=="human":
+                human_prompt_list.append(items[i]["value"])
+            else:
+                gpt_answer_list.append(items[i]["value"])
+        skip = True
+        for a in gpt_answer_list[0:3]:
+            if "```" in a:
+                skip = False
+                break
+        if skip:
             continue
-        text = input_prompt(prompt)
-        if text is False:
-            pyautogui.moveTo(settings.new_chat_x, settings.new_chat_y, duration = 1)
-            pyautogui.click(settings.new_chat_x, settings.new_chat_y)
+
+        messages = []
+        conv_id = str(string_to_id(human_prompt_list[0]))
+        if conv_id in result_list:
             continue
-        # with open(f"./data/Evol-Instruction-66k/{text_id}.json","w",encoding="utf-8") as fw:
-        #     json.dump({"input": prompt,"output": text}, fw, indent=4 , ensure_ascii=False)
-        now = datetime.now()
-        insert_logs(text_id,prompt,text,'Gemini Ultra','Evol-Instruction',now)
+        skip = False
+        for e in human_prompt_list[0:4]:
+            text = input_prompt(e)
+            if text is False:
+                skip = True
+                break
+            if len(text.split())<20:
+                skip = True
+                break
+            messages.append({"from":"human","value":e})
+            messages.append({"from":"gpt","value":text})
+        if (skip):
+            continue
+        with open(f"data/conv_gemini/{conv_id}.json","w",encoding="utf-8") as fw:
+            json.dump({"items":messages, "model":"Gemini Ultra"},fw, indent=4, ensure_ascii=False)
         pyautogui.moveTo(settings.new_chat_x, settings.new_chat_y, duration = 1)
         pyautogui.click(settings.new_chat_x, settings.new_chat_y)

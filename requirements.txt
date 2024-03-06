@@ -2,3 +2,5 @@ pyperclip
 pyautogui
 opencv-python
 pillow
+pyodbc
+ndjson

@@ -86,6 +86,8 @@ if __name__ == "__main__":
     from datetime import datetime
     time.sleep(5)
     import random
+    result_list = os.listdir("data/conv")
+    result_list = [e.split(".")[0] for e in result_list]
     with open("data/code-gpt4.json","r",encoding="utf-8") as fr:
         data = json.load(fr)
     random.shuffle(data)
@@ -108,10 +110,12 @@ if __name__ == "__main__":
 
         messages = []
         conv_id = str(string_to_id(human_prompt_list[0]))
+        if conv_id in result_list:
+            continue
         for e in human_prompt_list[0:4]:
             text = input_prompt(e)
             messages.append({"from":"human","value":e})
             messages.append({"from":"gpt","value":text})
         with open(f"data/conv/{conv_id}.json","w",encoding="utf-8") as fw:
-            json.dump(messages,fw, indent=4, ensure_ascii=False)
+            json.dump({"items":messages, "model":"Copilot"},fw, indent=4, ensure_ascii=False)
         pyautogui.click(230, 959, duration=1)
