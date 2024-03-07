@@ -107,7 +107,7 @@ if __name__ == "__main__":
     from datetime import datetime
     time.sleep(5)
     import random
-    result_list = os.listdir("data/conv_copilot")
+    result_list = os.listdir("data/conv")
     result_list = [e.split(".")[0] for e in result_list]
     with open("data/code-gpt4.json","r",encoding="utf-8") as fr:
         data = json.load(fr)
@@ -146,7 +146,7 @@ if __name__ == "__main__":
             messages.append({"from":"gpt","value":text})
         if (skip):
             continue
-        with open(f"data/conv_gemini/{conv_id}.json","w",encoding="utf-8") as fw:
+        with open(f"data/conv/{conv_id}.json","w",encoding="utf-8") as fw:
             json.dump({"items":messages, "model":"Gemini Ultra"},fw, indent=4, ensure_ascii=False)
         pyautogui.moveTo(settings.new_chat_x, settings.new_chat_y, duration = 1)
         pyautogui.click(settings.new_chat_x, settings.new_chat_y)

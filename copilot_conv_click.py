@@ -28,7 +28,6 @@ def find_button_location(button_img_path):
     rx, ry = 0, 0
     #Draw boudning box
     for y, x in zip(loc[0], loc[1]):
-        print('ok')
         # cv2.rectangle(orig_img, (x, y), (x + w, y + h), (0,0,255), 4)
         rx = int(x + w/2)
         ry = int(y + h/2)
@@ -50,23 +49,18 @@ def input_prompt(prompt):
     pyautogui.click(97,843)
     pyautogui.scroll(-10)
     time.sleep(10)
-    pyautogui.scroll(-500)
-    check_button = True
-    time_check = 0
-    while(check_button):
-        time_check = time_check + 1
-        if (time_check>10):
-            return False
-        else:
-            status_x , status_y = find_button_location("./icons/status.jpg")
-            if status_x == 0 and status_y == 0:
-                copy_x, copy_y = find_button_location("icons/co_option.jpg")
-                if copy_x == 0 and copy_y == 0:
-                    time.sleep(5)
-                    pyautogui.scroll(-5000)
-                else:
-                    break
-    
+    pyautogui.scroll(-1000)
+    while(True):
+        time.sleep(5)
+        status_x , status_y = find_button_location("./icons/status.jpg")
+        if status_x == 0 and status_y == 0:
+            break
+        pyautogui.scroll(-5000)
+
+    copy_x, copy_y = find_button_location("icons/co_option.jpg")
+    if copy_x == 0 and copy_y == 0:
+        print("Copy button is not found!")
+        return False
     pyperclip.copy(' ')
     pyautogui.click(copy_x-10, copy_y, duration=1)
     time.sleep(5)
