@@ -35,7 +35,7 @@ def find_button_location(button_img_path,THRESHOLD=0.8):
 
 def input_prompt(prompt):
     enter_x, enter_x = find_button_location("./icons/enter.jpg",THRESHOLD=0.9)
-    enter_x, enter_y = 715, 931
+    enter_x, enter_y = 715, 960
     pyautogui.click(enter_x, enter_y)
     with pyautogui.hold('ctrl'):
         pyautogui.press('a')
@@ -46,7 +46,7 @@ def input_prompt(prompt):
         pyautogui.press(['v'])
     
     pyautogui.typewrite(['enter'])
-    pyautogui.moveTo(enter_x, enter_y-100)
+    pyautogui.moveTo(enter_x, enter_y-200)
     pyautogui.scroll(-100)
     time.sleep(5)
     pyautogui.scroll(-5000)
