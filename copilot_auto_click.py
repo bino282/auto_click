@@ -101,7 +101,6 @@ if __name__ == "__main__":
     name = "CodeFeedback-Filtered-Instruction"
     with open(f"data/{name}.jsonl","r",encoding="utf-8") as fr:
         data = ndjson.load(fr)
-    results_list = os.listdir(f"data/{name}")
     random.shuffle(data)
     webbrowser.get(chrome_path).open_new(url)
     time.sleep(5)
@@ -117,6 +116,7 @@ if __name__ == "__main__":
             continue
         prompt = e["query"]
         text_id = str(string_to_id(prompt))
+        # results_list = os.listdir(f"data/{name}")
         # if f"{text_id}.json" in results_list:
         #     continue
         if checkid(text_id):
