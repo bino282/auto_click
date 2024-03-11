@@ -6,11 +6,18 @@ import cv2
 import numpy as np
 import pyperclip
 from sql_cli import *
-import webbrowser
-url = 'https://copilot.microsoft.com/'
-chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe %s --incognito'
-# find copy button
-# all img must be grayscale
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument("--incognito")
+service = Service(executable_path=r"./driver/chromedriver.exe")
+driver = webdriver.Chrome(service=service,options=chrome_options)
+
+driver.implicitly_wait(2)
+driver.maximize_window()
+
 
 def find_button_location(button_img_path,THRESHOLD=0.8):
     # take screenshot
@@ -34,9 +41,10 @@ def find_button_location(button_img_path,THRESHOLD=0.8):
     return rx, ry
 
 def input_prompt(prompt):
-    enter_x, enter_x = find_button_location("./icons/enter.jpg",THRESHOLD=0.9)
-    enter_x, enter_y = 715, 931
+    # enter_x, enter_x = find_button_location("./icons/enter.jpg",THRESHOLD=0.9)
+    enter_x, enter_y = 715, 960
     pyautogui.click(enter_x, enter_y)
+    time.sleep(1)
     with pyautogui.hold('ctrl'):
         pyautogui.press('a')
     pyautogui.press('delete')
@@ -46,32 +54,25 @@ def input_prompt(prompt):
         pyautogui.press(['v'])
     
     pyautogui.typewrite(['enter'])
-    pyautogui.moveTo(enter_x, enter_y-100)
-    pyautogui.scroll(-100)
-    time.sleep(5)
-    pyautogui.scroll(-5000)
+    pyautogui.moveTo(enter_x-600, enter_y-100)
     while(True):
         time.sleep(5)
         status_x , status_y = find_button_location("./icons/status.jpg")
         if status_x == 0 and status_y == 0:
             break
     pyautogui.scroll(-5000)
-    time.sleep(2)
-    limit_x, limit_y = find_button_location("./icons/limit.jpg")
-    if limit_x!=0 or limit_y!=0:
-        close_x, close_y = find_button_location("./icons/close.jpg")
-        if close_x!=0  or close_y!=0:
-            pyautogui.click(close_x+45, close_y-15, duration=1)
-            time.sleep(1)
-            webbrowser.get(chrome_path).open_new(url)
-            return False
+    time.sleep(1)
     continue_x, continue_y = find_button_location("./icons/continue.jpg")
     if continue_x!=0 or continue_y!=0:
         pyautogui.click(continue_x, continue_y, duration=1)
         time.sleep(1)
-    pyautogui.scroll(-5000)
-    time.sleep(2)
+    pyautogui.scroll(-500)
+    time.sleep(1)
+    count = 0
     while(True):
+        count = count + 1
+        if count > 10:
+            return False
         copy_x, copy_y = find_button_location("icons/co_option.jpg")
         if copy_x == 0 and copy_y == 0:
             pyautogui.scroll(200)
@@ -82,7 +83,7 @@ def input_prompt(prompt):
         return False
     pyperclip.copy(' ')
     pyautogui.click(copy_x, copy_y, duration=1)
-    time.sleep(5)
+    time.sleep(5) 
     text = pyperclip.paste()
     if text == ' ':
         return False
@@ -101,15 +102,14 @@ if __name__ == "__main__":
     name = "CodeFeedback-Filtered-Instruction"
     with open(f"data/{name}.jsonl","r",encoding="utf-8") as fr:
         data = ndjson.load(fr)
-    results_list = os.listdir(f"data/{name}")
     random.shuffle(data)
-    webbrowser.get(chrome_path).open_new(url)
+    url = "https://copilot.microsoft.com/"
+    driver.get(url)
     time.sleep(5)
-    new_x, new_y = find_button_location("./icons/new.jpg",THRESHOLD=0.7)
-    # new_x, new_y = settings.copilot_x, settings.copilot_y
-    if new_x==0 and new_y==0:
-        print("new button is not found")
-        exit()
+    new_x, new_y = find_button_location("./icons/new.jpg")
+    if new_x == 0 and new_y ==0:
+        print("new button is not found!")
+        new_x, new_y = 296, 940
     pyautogui.click(new_x, new_y, duration=1)
     count = 1
     for e in data:
@@ -117,6 +117,7 @@ if __name__ == "__main__":
             continue
         prompt = e["query"]
         text_id = str(string_to_id(prompt))
+        # results_list = os.listdir(f"data/{name}")
         # if f"{text_id}.json" in results_list:
         #     continue
         if checkid(text_id):
@@ -124,14 +125,13 @@ if __name__ == "__main__":
         text = input_prompt(prompt)
         print(count)
         count = count + 1
-        if count==20:
-            close_x, close_y = find_button_location("./icons/close.jpg")
-            if close_x!=0  or close_y!=0:
-                pyautogui.click(close_x, close_y, duration=1)
-                time.sleep(1)
-                webbrowser.get(chrome_path).open_new(url)
-                time.sleep(5)
-                continue
+        if count%25==0:
+            driver.close()
+            driver = webdriver.Chrome(service=service,options=chrome_options)
+            driver.implicitly_wait(2)
+            driver.maximize_window()
+            driver.get(url)
+            time.sleep(5)
         if text is False:
             print(text_id,False)
             pyautogui.click(new_x, new_y, duration=1)
