@@ -133,6 +133,6 @@ if __name__ == "__main__":
             pyautogui.click(new_x, new_y, duration=1)
             continue
         now = datetime.now()
-        insert_logs(text_id,prompt,text,'Copilot',name,now)
+        insert_logs(text_id,prompt,text,'Copilot_test',name,now)
         pyautogui.click(new_x, new_y, duration=1)
         
