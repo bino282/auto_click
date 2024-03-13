@@ -136,33 +136,37 @@ if __name__ == "__main__":
     pyautogui.click(new_x, new_y, duration=1)
     count = 1
     for e in data:
-        # if e["lang"]=="python":
-        #     continue
-        if len(e["query"])>=2000:
-            continue
-        prompt = e["query"]
-        text_id = str(string_to_id(prompt))
-        if checkid(text_id):
-            continue
-        text = input_prompt(prompt)
-        print(count)
-        count = count + 1
-        if count%60==0:
-            res = change_ip()
-            print(res)
-        if count%20==0:
-            driver.close()
-            driver = webdriver.Chrome(service=service,options=chrome_options)
-            driver.implicitly_wait(2)
-            driver.maximize_window()
-            driver.get(url)
-            enter_proxy_auth()
-            time.sleep(5)
-        if text is False:
-            print(text_id,False)
+        try:
+            if e["lang"]=="python":
+                continue
+            if len(e["query"])>=2000:
+                continue
+            prompt = e["query"]
+            text_id = str(string_to_id(prompt))
+            if checkid(text_id):
+                continue
+            text = input_prompt(prompt)
+            print(count)
+            count = count + 1
+            if count%60==0:
+                res = change_ip()
+                print(res)
+            if count%20==0:
+                driver.close()
+                driver = webdriver.Chrome(service=service,options=chrome_options)
+                driver.implicitly_wait(2)
+                driver.maximize_window()
+                driver.get(url)
+                enter_proxy_auth()
+                time.sleep(5)
+            if text is False:
+                print(text_id,False)
+                pyautogui.click(new_x, new_y, duration=1)
+                continue
+            now = datetime.now()
+            insert_logs(text_id,prompt,text,'Copilot',name,now)
             pyautogui.click(new_x, new_y, duration=1)
+        except:
+            time.sleep(120)
             continue
-        now = datetime.now()
-        insert_logs(text_id,prompt,text,'Copilot',name,now)
-        pyautogui.click(new_x, new_y, duration=1)
         
