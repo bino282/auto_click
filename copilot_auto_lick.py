@@ -124,7 +124,7 @@ if __name__ == "__main__":
     url = "https://copilot.microsoft.com/"
     driver.get(url)
     enter_proxy_auth()
-    time.sleep(100)
+    time.sleep(5)
     new_x, new_y = find_button_location("./icons/new.jpg")
     if new_x == 0 and new_y ==0:
         print("new button is not found!")
