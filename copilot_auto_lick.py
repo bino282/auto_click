@@ -9,7 +9,11 @@ from sql_cli import *
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-
+import requests
+def change_ip():
+    headers = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYxMjhmZWI1M2EwMjBhNWM3YTlkMTAiLCJpYXQiOjE3MTAzNDEyMjcsImV4cCI6MTcxMjkzMzIyN30.hWa0C2Q9jhSGgNBoPE_IBIWdIFwxILEMvU6_dUX7Rj0"}
+    res = requests.get("https://api.zingproxy.com/proxy/dan-cu-viet-nam/get-ip?sourceId=ZP24096_66209&location=Random",headers=headers).json()
+    return res
 def enter_proxy_auth():
     time.sleep(1)
     pyperclip.copy('nha28_HfkqY')
@@ -132,7 +136,9 @@ if __name__ == "__main__":
     pyautogui.click(new_x, new_y, duration=1)
     count = 1
     for e in data:
-        if e["lang"]=="python":
+        # if e["lang"]=="python":
+        #     continue
+        if len(e["query"])>=2000:
             continue
         prompt = e["query"]
         text_id = str(string_to_id(prompt))
@@ -141,6 +147,9 @@ if __name__ == "__main__":
         text = input_prompt(prompt)
         print(count)
         count = count + 1
+        if count%50:
+            res = change_ip()
+            print(res)
         if count%20==0:
             driver.close()
             driver = webdriver.Chrome(service=service,options=chrome_options)
