@@ -12,11 +12,15 @@ from selenium.webdriver.chrome.service import Service
 
 def enter_proxy_auth():
     time.sleep(1)
-    pyautogui.typewrite('nha282')
+    pyperclip.copy('nha28_HfkqY')
+    with pyautogui.hold('ctrl'):
+        pyautogui.press(['v'])
     pyautogui.press('tab')
-    pyautogui.typewrite('nzVEVMZ3JsBub')
+    pyperclip.copy('PT1cgwy5')
+    with pyautogui.hold('ctrl'):
+        pyautogui.press(['v'])
     pyautogui.press('enter')
-PROXY = "http://ip.mproxy.vn:12307"
+PROXY = "http://116.97.201.89:29673"
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--incognito")
 chrome_options.add_argument('--proxy-server=%s' % PROXY)
@@ -120,7 +124,7 @@ if __name__ == "__main__":
     url = "https://copilot.microsoft.com/"
     driver.get(url)
     enter_proxy_auth()
-    time.sleep(10)
+    time.sleep(100)
     new_x, new_y = find_button_location("./icons/new.jpg")
     if new_x == 0 and new_y ==0:
         print("new button is not found!")
