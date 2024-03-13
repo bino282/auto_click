@@ -10,11 +10,18 @@ from sql_cli import *
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
+def enter_proxy_auth():
+    time.sleep(1)
+    pyautogui.typewrite('nha282')
+    pyautogui.press('tab')
+    pyautogui.typewrite('nzVEVMZ3JsBub')
+    pyautogui.press('enter')
+PROXY = "http://ip.mproxy.vn:12307"
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--incognito")
+chrome_options.add_argument('--proxy-server=%s' % PROXY)
 service = Service(executable_path=r"./driver/chromedriver.exe")
 driver = webdriver.Chrome(service=service,options=chrome_options)
-
 driver.implicitly_wait(2)
 driver.maximize_window()
 
@@ -55,6 +62,13 @@ def input_prompt(prompt):
     
     pyautogui.typewrite(['enter'])
     pyautogui.moveTo(enter_x-600, enter_y-100)
+    time.sleep(5)
+    pyautogui.scroll(-500)
+    human_x , human_y = find_button_location("./icons/human.jpg")
+    if human_x!=0 and human_y!=0:
+        print(human_x, human_y)
+        pyautogui.click(human_x, human_y, duration=1)
+    pyautogui.scroll(-500)
     while(True):
         time.sleep(5)
         status_x , status_y = find_button_location("./icons/status.jpg")
@@ -105,6 +119,8 @@ if __name__ == "__main__":
     random.shuffle(data)
     url = "https://copilot.microsoft.com/"
     driver.get(url)
+    enter_proxy_auth()
+    time.sleep(10)
     new_x, new_y = find_button_location("./icons/new.jpg")
     if new_x == 0 and new_y ==0:
         print("new button is not found!")
@@ -121,18 +137,19 @@ if __name__ == "__main__":
         text = input_prompt(prompt)
         print(count)
         count = count + 1
-        if count%25==0:
+        if count%20==0:
             driver.close()
             driver = webdriver.Chrome(service=service,options=chrome_options)
             driver.implicitly_wait(2)
             driver.maximize_window()
             driver.get(url)
+            enter_proxy_auth()
             time.sleep(5)
         if text is False:
             print(text_id,False)
             pyautogui.click(new_x, new_y, duration=1)
             continue
         now = datetime.now()
-        insert_logs(text_id,prompt,text,'Copilot_test',name,now)
+        insert_logs(text_id,prompt,text,'Copilot',name,now)
         pyautogui.click(new_x, new_y, duration=1)
         
