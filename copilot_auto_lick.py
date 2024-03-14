@@ -148,10 +148,9 @@ if __name__ == "__main__":
             text = input_prompt(prompt)
             print(count)
             count = count + 1
-            if count%60==0:
+            if count%20==0:
                 res = change_ip()
                 print(res)
-            if count%20==0:
                 driver.close()
                 driver = webdriver.Chrome(service=service,options=chrome_options)
                 driver.implicitly_wait(2)
