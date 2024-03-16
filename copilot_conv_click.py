@@ -9,9 +9,26 @@ from sql_cli import *
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+import requests
+def change_ip():
+    headers = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWYxMjhmZWI1M2EwMjBhNWM3YTlkMTAiLCJpYXQiOjE3MTAzNDEyMjcsImV4cCI6MTcxMjkzMzIyN30.hWa0C2Q9jhSGgNBoPE_IBIWdIFwxILEMvU6_dUX7Rj0"}
+    res = requests.get("https://api.zingproxy.com/proxy/dan-cu-viet-nam/get-ip?sourceId=ZP24096_66209&location=Random",headers=headers).json()
+    return res
+def enter_proxy_auth():
+    time.sleep(1)
+    pyperclip.copy('nha28_HfkqY')
+    with pyautogui.hold('ctrl'):
+        pyautogui.press(['v'])
+    pyautogui.press('tab')
+    pyperclip.copy('PT1cgwy5')
+    with pyautogui.hold('ctrl'):
+        pyautogui.press(['v'])
+    pyautogui.press('enter')
 
+PROXY = "http://116.111.110.252:29673"
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--incognito")
+chrome_options.add_argument('--proxy-server=%s' % PROXY)
 service = Service(executable_path=r"./driver/chromedriver.exe")
 driver = webdriver.Chrome(service=service,options=chrome_options)
 
@@ -107,6 +124,7 @@ if __name__ == "__main__":
     random.shuffle(data)
     url = "https://copilot.microsoft.com/"
     driver.get(url)
+    enter_proxy_auth()
     time.sleep(5)
     new_x, new_y = find_button_location("./icons/new.jpg")
     if new_x == 0 and new_y ==0:
@@ -116,12 +134,15 @@ if __name__ == "__main__":
     count = 0
     for e in data:
         count = count + 1
-        if count%20==0:
+        if count%10==0:
+            res = change_ip()
             driver.close()
+            time.sleep(5)
             driver = webdriver.Chrome(service=service,options=chrome_options)
             driver.implicitly_wait(2)
             driver.maximize_window()
             driver.get(url)
+            enter_proxy_auth()
             time.sleep(5)
         items = e["items"]
         human_prompt_list = []

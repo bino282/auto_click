@@ -24,7 +24,7 @@ def enter_proxy_auth():
     with pyautogui.hold('ctrl'):
         pyautogui.press(['v'])
     pyautogui.press('enter')
-PROXY = "http://116.97.201.89:29673"
+PROXY = "http://116.111.110.252:29673"
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--incognito")
 chrome_options.add_argument('--proxy-server=%s' % PROXY)
@@ -137,8 +137,9 @@ if __name__ == "__main__":
     count = 1
     for e in data:
         try:
-            if e["lang"]=="python":
-                continue
+            if "lang" in e:
+                if e["lang"]=="python":
+                    continue
             if len(e["query"])>=2000:
                 continue
             prompt = e["query"]
@@ -152,6 +153,7 @@ if __name__ == "__main__":
                 res = change_ip()
                 print(res)
                 driver.close()
+                time.sleep(5)
                 driver = webdriver.Chrome(service=service,options=chrome_options)
                 driver.implicitly_wait(2)
                 driver.maximize_window()
